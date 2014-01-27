@@ -1,0 +1,132 @@
+<!doctype html>
+<html ng-app>
+<head>
+	<meta charset="UTF-8">
+	<title>API test</title>
+	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<script src="js/md5.min.js"></script>
+	<script src="js/angular.min.js"></script>
+	<script>
+		function request(url, params, values){
+			var addr = url;
+			if(params[0] != undefined && values[0] != undefined && values[0] != '')
+				addr += '?' + params[0] + "=" + values[0];
+			for(var i=1; i < values.length; i++)
+				if(params[i] != undefined && values[i] != undefined && values[i] != '')
+					addr += "&" + params[i] + "=" + values[i];
+			return addr;
+		}
+	
+		function API(url){
+			this.url = url;
+			this.params = Array.prototype.slice.call(arguments, 1, arguments.length);
+			this.values = Array(this.params.length);
+			this.request = request;
+		}
+		
+		function APIListCtrl($scope) {
+			$scope.md5 = hex_md5;
+			$scope.token_key = "9ae5r06fs8";
+			$scope.key = function(args){
+				return args.join("");
+			}
+			$scope.concat = function(args){
+				return args.join("") + $scope.token_key;
+			}
+			$scope.date = "2014,01,26 16:45:00";
+			$scope.date2ts = function(date){
+				return Date.parse(date);
+			}
+			$scope.date2ts_1000 = function(date){
+				return (Date.parse(date) + "") / 1000;
+			}
+			
+			$scope.apilist = [
+			new API("smscode", "tel"),
+			new API("codeMap"),
+			new API("setCode", "tel", "code"),
+			
+			new API("account/info", "accountId"),
+			new API("account/login", "username", "pwd"),
+			new API("account/register", "username", "pwd", "tel", "code"),
+			new API("account/bound", "accountId", "deviceSn"),
+			
+			new API("user/update","id","tel","height","weight","img"),
+			new API("user/create","name","gender","idcard","tel","height","weight","img"),
+			new API("user/info","userId"),
+			
+			new API("user/selfmeasure","userId","mood","bodyPosition","systolicPressure","diastolicPressure"),
+			new API("user/drug","userId","drugId","recordDate"),
+			
+			new API("user/measureRecord","userId","beginDate","endDate"),
+			new API("user/selfmeasureRecord","userId","beginDate","endDate"),
+			new API("user/drugRecord","userId","beginDate","endDate"),
+			
+			new API("drug", "drugId"),
+			new API("drug/list"),
+			
+			new API("device/listAvailable"),
+			new API("device/listBounded"),
+			new API("device/listAccount"),
+			
+			new API("lexin/InitDeviceService", "deviceSn", "hardwareVersion", "softwareVersion",
+					"bridgeId", "maxUserQuantity", "deviceType"),
+			new API("lexin/BloodPressureDataService", "deviceSn","bridgeId","userNo",
+					"measurementDate","systolicPressure","diastolicPressure","heartRate",
+					"movementErrorFlag","irregularHeartBearFlag","platformId"),
+			new API("upload"),
+			
+			] ;
+		}
+	</script>
+</head>
+<body ng-controller="APIListCtrl" class="container">
+	
+	<header class="navbar navbar-fixed-top" role="banner" style="background: #dcf8dc">
+		<nav class="collapse navbar-collapse" role="navigation"> 
+		Search: <input type="text" ng-model="search">
+ 		<a href="http://sdrv.ms/1dAF6Lr">YiKangXYJ_api.xlsx</a><br>
+ 		token_key <input type="text" ng-model="token_key">
+ 		md5 <input type="text" ng-model="str"> {{md5(str)}} <br>
+ 		date2ts/1000 ( yyyy,MM,dd HH:mm:ss ) <input type="text" ng-model="date"> {{date2ts_1000(date)}}
+ 		</nav>
+ 	</header>
+ 	<hr>	
+ 	<hr>
+ 	<hr>
+	<div class="container">
+	<!-- 
+		<div ng-repeat="api in apilist | filter:search" class="col-md-3">
+			<ul class="nav">
+				<li> <a href="#{{api.url}}">{{api.url}}</a> </li>
+			</ul>
+		</div>
+	 -->
+		
+		<div role="main" >
+			<div ng-repeat="api in apilist | filter:search" id="{{api.url}}">
+				<strong>
+				<a href="{{api.request(api.url, api.params, api.values)}}">
+				{{api.request(api.url, api.params, api.values)}}
+				</a>
+				</strong>
+				<br> token = md5( {{concat(api.values)}} )<br>
+				<!-- <p>{{api.params}} {{api.values}}</p> -->
+				
+				<form action="{{api.url}}" method="post" class="form-inline">
+				
+					<div ng-repeat="(idx,param) in api.params" class="form-group">
+					{{param}} <input name="{{param}}" ng-model="api.values[idx]" ng-hide="param==undefined" required>
+					</div>
+					key <input name="key" value="{{key(api.values)}}" readonly="readonly">
+					token <input name="token" value="{{md5(concat(api.values))}}">
+					<input type="submit" class="btn btn-success" ng-hide="api.params[0]==undefined">
+				</form>
+				<hr>
+			</div>
+		</div>
+		
+	</div>
+
+</body>
+</html>
