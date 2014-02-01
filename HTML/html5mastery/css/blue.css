@@ -1,0 +1,7 @@
+h1{
+color: blue;
+}
+
+#rows li:nth-child(even){
+	background-color:#ccf;
+}

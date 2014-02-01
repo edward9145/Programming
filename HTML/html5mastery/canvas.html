@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>canvas</title>
+	<script>
+	var canvas;
+	var context;
+	var centerX;
+	var centerY;
+	var degrees = 0;
+	var radius = 1;
+		function init(){
+			canvas = document.getElementById("canvas");
+			console.log(canvas.constructor.prototype);
+			
+			context = canvas.getContext("2d");
+			centerX = canvas.width / 2;
+			centerY = canvas.height / 2;
+			
+			context.moveTo(centerX, centerY);
+			
+			for( var i=0; i<2000; i++){	
+				degrees += 1;
+				radius += 0.05;
+				context.lineTo(
+					centerX + Math.cos(degrees * Math.PI/180) * radius, 
+					centerY + Math.sin(degrees * Math.PI/180) * radius
+					);
+			}
+			context.stroke();
+		}
+	window.onload = init;
+	</script>
+</head>
+<body>
+	<canvas id="canvas" width="300" height="300">
+		<p>canvas not support</p>
+	</canvas>
+</body>
+</html>

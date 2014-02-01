@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>canvas draw</title>
+	<script>
+	var canvas;
+	var context;
+	var cwidth;
+	var cheight;
+	var lastX = 0;
+	var lastY = 0;
+	var isDown = false;
+	
+		function init(){
+			canvas = document.getElementById("canvas");
+			console.log(canvas.constructor.prototype);
+			
+			context = canvas.getContext("2d");
+			cwidth = canvas.width;
+			cheight = canvas.height;
+			
+			context.strokeStyle = "#000";
+			context.strokeRect(0, 0, cwidth, cheight);
+			
+			canvas.onmouseup = mouseup;
+			canvas.onmousedown = mousedown;
+			canvas.onmousemove = draw;
+		}
+		
+		function mouseup(e) {
+			isDown = false;
+		}
+		function mousedown(e){
+			isDown = true;
+			lastX = e.pageX - canvas.offsetLeft;
+			lastY = e.pageY - canvas.offsetTop;
+		}
+		
+		function draw(e){
+			if(!isDown) return;
+			
+			context.beginPath();
+			context.moveTo(lastX, lastY);
+			lastX = e.pageX - canvas.offsetLeft;
+			lastY = e.pageY - canvas.offsetTop;
+			
+			context.lineTo(lastX, lastY);
+			context.closePath();
+			context.stroke();
+		}
+	window.onload = init;
+	</script>
+</head>
+<body>
+	<canvas id="canvas" width="300" height="300">
+		<p>canvas not support</p>
+	</canvas>
+</body>
+</html>

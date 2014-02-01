@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>canvas anime</title>
+	<script>
+	var canvas;
+	var context;
+	var cwidth;
+	var cheight;
+	var lastX = 0;
+	var lastY = 0;
+	var centerX;
+	var centerY;
+	var degrees = 0;
+	var radius = 1;
+	
+		function init(){
+			canvas = document.getElementById("canvas");
+			console.log(canvas.constructor.prototype);
+			
+			context = canvas.getContext("2d");
+			cwidth = canvas.width;
+			cheight = canvas.height;
+			centerX = canvas.width / 2;
+			centerY = canvas.height / 2;
+			
+			context.strokeStyle = "#000";
+			context.strokeRect(0, 0, cwidth, cheight);
+			
+			setInterval(update, 20);
+		}
+		
+		function invalidate(){
+			clear();
+			draw();
+		}
+		
+		function clear(){
+			// context.clearRect(0, 0, cwidth, cheight);
+		}
+		
+		function draw(e){
+			context.beginPath();
+			context.moveTo(lastX, lastY);
+			context.lineTo(
+				centerX + Math.cos(degrees * Math.PI/180) * radius, 
+				centerY + Math.sin(degrees * Math.PI/180) * radius
+				);
+			context.closePath();
+			context.stroke();
+		}
+		
+		function update(){
+			lastX = centerX + Math.cos(degrees * Math.PI/180) * radius; 
+			lastY = centerY + Math.sin(degrees * Math.PI/180) * radius;
+			degrees += 1.5;
+			radius += 0.07;
+			invalidate();
+		}
+		
+	window.onload = init;
+	</script>
+</head>
+<body>
+	<canvas id="canvas" width="300" height="300">
+		<p>canvas not support</p>
+	</canvas>
+</body>
+</html>

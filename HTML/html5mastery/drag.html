@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Draggable</title>
+	<script>
+	var draggable;
+	var droptarget;
+		function init(){
+			draggable = document.getElementById("draggable");
+			droptarget = document.getElementById("droptarget");
+			
+			draggable.ondragstart = dragStartHandler;
+			draggable.ondrag = dragHandler;
+			draggable.ondragend = dragEndHandler;
+			
+			droptarget.ondragenter = dragEnterHandler;
+			droptarget.ondragover = dragOverHandler;
+			droptarget.ondragleave = dragLeaveHandler;
+			droptarget.ondrop = dropHandler;
+		}
+		
+		function dragStartHandler(e) { console.log("dragstart"); console.log(e);}
+		function dragHandler(e) { console.log("drag");}
+		function dragEndHandler(e) { console.log("dragend"); console.log(e);}
+		
+		function dragEnterHandler(e) { console.log("dragenter");}
+		function dragOverHandler(e) { 
+			// console.log("dragover");
+			if(e.preventDefault) e.preventDefault();
+			return false;
+		}
+		function dragLeaveHandler(e) { console.log("dragleave");}
+		function dropHandler(e) { console.log("drop");}
+		
+	window.onload = init;
+	</script>
+	<style>
+		section{
+			width: 200px;
+			padding: 0px;
+			background-color: #ccc;
+			border: 1px solid #000;
+			float: left;
+			margin-right: 4px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+	<section>
+		<h1 draggable="true" id="draggable">Draggable</h1>
+	</section>
+	<section>
+		<h1 draggable="false" id="droptarget">Drop Target</h1>
+	</section>
+</body>
+</html>

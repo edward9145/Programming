@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Draggable List</title>
+	<script>
+		var dragging;
+		var dir;
+		function init(){
+			var li = document.getElementsByTagName("li");
+			for(var i=0; i<li.length; i++){
+				li[i].draggable = true;
+				li[i].ondragstart = dragStartHandler;
+				li[i].ondragover = dragOverHandler;
+				li[i].ondragend = dragEndHandler;
+			}
+		}
+		function dragStartHandler(e){
+			dragging = e.target;
+			e.dataTransfer.setData("text/plain", null);
+			dragging.style.opacity = "0.5";
+			dragging.style.background = "#fcc";
+		}
+		function dragOverHandler(e){
+			if(dragging != e.target && dragging.parentNode != null){
+				if(e.target.previousElementSibling == dragging) dir = "down";
+				else dir = "up";
+				
+				dragging.parentNode.removeChild(dragging);
+				
+				if(dir == "down"){
+					dragging = e.target.parentNode.appendChild(dragging, e.target);
+				}
+				else if(dir == "up"){
+					dragging = e.target.parentNode.insertBefore(dragging, e.target);
+				}
+			}
+			if(e.preventDefault) e.preventDefault();
+			return false;
+		}
+		function dragEndHandler(e){
+			console.log(dragging);
+			dragging.style.opacity = "1.0";
+			dragging.style.background = "#fff";
+		}
+		window.onload = init;
+	</script>
+</head>
+<body>
+	<ol>
+		<li>One</li>
+		<li>Two</li>
+		<li>Three</li>
+		<li>Four</li>
+		<li>Five</li>
+	</ol>
+</body>
+</html>

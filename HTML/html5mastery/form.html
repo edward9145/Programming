@@ -1,0 +1,46 @@
+﻿<!doctype html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title>Form</title>
+</head>
+<body>
+	<form action="" autocomplete="on">
+		<progress max="3" value="1">Step 1 of 3</progress> <br>
+		<meter min="0" max="100" low="20" high="80" optimum="90" value="10"></meter> 10% <br>
+		<meter min="0" max="100" low="20" high="80" optimum="90" value="50"></meter> 50% <br>
+		<meter min="0" max="100" low="20" high="80" optimum="90" value="90"></meter> 90% <br>
+		<datalist id="salaries"><option value="40,000+"></option>
+		<option value="60,000+"></option>
+		<option value="80,000+"></option>
+		<option value="100,000+"></option></datalist>
+		<p>salary: <input type="text" name="salary" list="salaries"></p>
+		readonly: <input name="text" type="text" value="readonly text" readonly> <br>
+		search: <input name="search" type="search" placeholder="search content"> <br>
+		datetime: <input name="datetime" type="datetime"> <br>
+		date: <input name="date" type="date"> <br>
+		time: <input name="time" type="time"> <br>
+		month: <input name="month" type="month"> <br>
+		week: <input name="week" type="week"> <br>
+		number: <input name="number" type="number"> <br>
+		range: <input name="range" type="range"> <br>
+		color: <input name="color" type="color"> <br>
+		email: <input name="email" type="email"> <br>
+		tel: <input name="tel" type="tel"> <br>
+		url: <input name="url" type="url" placeholder="http://example.com"> <br>
+		select: 
+		<select name="cheesemenu">
+			<optgroup label="English Cheeses">
+				<option value="chedder">Chedder</option>
+				<option value="stilton">Stilton</option>
+			</optgroup>
+			<optgroup label="French Chesses">
+				<option value="brie">Brie</option>
+			</optgroup>
+		</select> <br>
+		<input type="reset"> <br>
+		<input type="submit"> <br>
+		<button type="sumbit"><img src="star.png"><b>submit</b></button>
+	</form>
+</body>
+</html>
