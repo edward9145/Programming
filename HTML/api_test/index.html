@@ -4,8 +4,11 @@
 	<meta charset="UTF-8">
 	<title>API test</title>
 	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<script src="js/md5.min.js"></script>
+	<script src="js/jquery-1.10.2.min.js"></script>
+	<script src="js/bootstrap.min.js"></script>
+	<script src="js/md5.js"></script>
 	<script src="js/angular.min.js"></script>
+	<script src="js/dateformat.js"></script>
 	<script>
 		function request(url, params, values){
 			var addr = url;
@@ -19,8 +22,9 @@
 	
 		function API(url){
 			this.url = url;
-			this.params = Array.prototype.slice.call(arguments, 1, arguments.length);
+			this.params = Array.prototype.slice.call(arguments, 1, (arguments.length+1)/2);
 			this.values = Array(this.params.length);
+			this.placeholders = Array.prototype.slice.call(arguments, (arguments.length+1)/2, arguments.length);
 			this.request = request;
 		}
 		
@@ -33,78 +37,182 @@
 			$scope.concat = function(args){
 				return args.join("") + $scope.token_key;
 			}
-			$scope.date = "2014,01,26 16:45:00";
+			$scope.date = new Date().pattern("yyyy,MM,dd HH:mm:ss");
 			$scope.date2ts = function(date){
 				return Date.parse(date);
 			}
 			$scope.date2ts_1000 = function(date){
 				return (Date.parse(date) + "") / 1000;
 			}
+			$scope.uuid = function(){
+			    function S4() {
+			       return (((1+Math.random())*0x10000)|0).toString(16).substring(1);
+			    }
+			    return (S4()+S4()+"-"+S4()+"-"+S4()+"-"+S4()+"-"+S4()+S4()+S4());
+			}
 			
 			$scope.apilist = [
-			new API("smscode", "tel"),
+
+    		new API("appInfo"),
+
+			new API("smscode", "tel", 
+					"186xxxxxxxx"),
 			new API("codeMap"),
-			new API("setCode", "tel", "code"),
+			new API("setCode", "tel", "code", 
+					"186xxxxxxxx", "1234"),
 			
-			new API("account/info", "accountId"),
-			new API("account/login", "username", "pwd"),
-			new API("account/register", "username", "pwd", "tel", "code"),
-			new API("account/bound", "accountId", "deviceSn"),
+			new API("account/info", "accountId", 
+					"001"),
+			new API("account/login", "username", "pwd", 
+					"yikang", "yikang"),
+			new API("account/register", "username", "pwd", "tel", "code", 
+					"yikang", "yikang", "186xxxxxxxx", "1234"),
+			new API("account/bound", "accountId", "deviceSn", 
+					"001", "0190259703670268"),
+			new API("account/unbound", "accountId", "deviceSn", 
+					"001", "0190259703670268"),
 			
-			new API("user/update","id","tel","height","weight","img"),
-			new API("user/create","name","gender","idcard","tel","height","weight","img"),
-			new API("user/info","userId"),
+			new API("user/create", "accountId", "name","gender","userNo","idcard","tel","height","weight","img",
+					"001", "dad", "1", "1","xxxxxxxxxxxxxxxxxx", "186xxxxxxxx", "175", "68", "http://example.jpg"),
+			new API("user/update","id","tel","height","weight","img",
+					"001user1", "186xxxxxxxx", "175", "68", "http://example.jpg"),
+			new API("user/delete","userId",
+					"UUID"),
+			new API("user/info","userId",
+					"001user1"),
+			new API("user/unbound","userId",
+					"001user1"),
 			
-			new API("user/selfmeasure","userId","mood","bodyPosition","systolicPressure","diastolicPressure"),
-			new API("user/drug","userId","drugId","recordDate"),
+			new API("user/selfmeasure","id", "userId", "measurementDate", "mood","bodyPosition","systolicPressure","diastolicPressure",
+					"UUID", "001user1", "2013-02-14 00:00:00", "cool", "69", "120", "80"),
+			new API("user/drug","userId","drugId","recordDate",
+					"001user1", "1", "2013-02-07 12:00:00"),
 			
-			new API("user/measureRecord","userId","beginDate","endDate"),
-			new API("user/selfmeasureRecord","userId","beginDate","endDate"),
-			new API("user/drugRecord","userId","beginDate","endDate"),
+			new API("user/measureRecord","userId","beginDate","endDate",
+					"001user1", "2013-01-01 00:00:00", "2013-01-31 00:00:00"),
+			new API("user/selfmeasureRecord","userId","beginDate","endDate",
+					"001user1", "2013-01-01 00:00:00", "2013-01-31 00:00:00"),
+			new API("user/drugRecord","userId","beginDate","endDate",
+					"001user1", "2013-01-01 00:00:00", "2013-01-31 00:00:00"),
 			
-			new API("drug", "drugId"),
+			new API("drug", "drugId",
+					"1"),
 			new API("drug/list"),
 			
 			new API("device/listAvailable"),
 			new API("device/listBounded"),
-			new API("device/listAccount"),
+			new API("device/listUser", "deviceSn",
+					""),
+			new API("device/accountInfo", "deviceSn",
+					""),
 			
 			new API("lexin/InitDeviceService", "deviceSn", "hardwareVersion", "softwareVersion",
-					"bridgeId", "maxUserQuantity", "deviceType"),
+					"bridgeId", "maxUserQuantity", "deviceType",
+					"0190259703670268", "A3", "A9", "645dd700dd07", "2", ""),
 			new API("lexin/BloodPressureDataService", "deviceSn","bridgeId","userNo",
 					"measurementDate","systolicPressure","diastolicPressure","heartRate",
-					"movementErrorFlag","irregularHeartBearFlag","platformId"),
+					"movementErrorFlag","irregularHeartBearFlag","platformId",
+					"0190259703670268", "645dd700dd07", "1", "1391736149", "120", "80", "70", "false", "false", "hlyk"),
 			new API("upload"),
 			
+			new API("http://210.77.144.236:6101/devicegatewayservice/device/register_device", 
+					"platformId", "deviceSn", 
+					"hlyk","0190259703670268"),
+			new API("http://210.77.144.236:6101/devicegatewayservice/device/save_device_setting", 
+					"deviceSn", "unit", "timezone", "hourmode",
+					"0190259703670268", "mmHg", "UTC+08:00", "24H"),
+					
+			new API("user/ask", "id", "title", "content", "questionDate", "userId",  
+					"UUID", "How to heal?", "I have serious...", "2014-02-28 18:00", "001user1"),
+			
+			new API("question","questionId",
+					"09"),
+			new API("question/list","userId","beginDate","endDate",
+					"001user1", "2013-03-01 00:00:00", "2013-03-31 00:00:00"),
+			new API("question/answer","questionId",
+					"UUID"),
+			new API("question/answer.html","questionId",
+					"09"),
+			new API("notice/list","userId","beginDate","endDate",
+					"001user1", "2013-03-01 00:00:00", "2013-03-31 00:00:00"),
 			] ;
 		}
 	</script>
 </head>
 <body ng-controller="APIListCtrl" class="container">
 	
-	<header class="navbar navbar-fixed-top" role="banner" style="background: #dcf8dc">
+	<div class="navbar-fixed-top btn-group navbar-right" style="z-index: 1031">
+	  <button type="button" class="btn btn-danger btn-sm dropdown-toggle pull-right" data-toggle="dropdown">
+	    Show All 
+	    <span class="glyphicon glyphicon-chevron-down"></span>
+	  </button>
+	  <ul class="dropdown-menu" role="menu">
+	    <li ng-repeat="(idx,api) in apilist | filter:search"><a href="#{{api.url}}">{{idx}}.  {{api.url}}</a></li>
+	  </ul>
+	</div>
+	
+	<footer class="navbar-fixed-bottom " role="banner" style="background: #fff0ad">
+		<br>
 		<nav class="collapse navbar-collapse" role="navigation"> 
-		Search: <input type="text" ng-model="search">
- 		<a href="http://sdrv.ms/1dAF6Lr">YiKangXYJ_api.xlsx</a><br>
- 		token_key <input type="text" ng-model="token_key">
- 		md5 <input type="text" ng-model="str"> {{md5(str)}} <br>
- 		date2ts/1000 ( yyyy,MM,dd HH:mm:ss ) <input type="text" ng-model="date"> {{date2ts_1000(date)}}
+	<form>
+		<div class="form-group input-group">
+			<span class="input-group-btn">
+        		<button class="btn btn-default" type="button">
+        		<span class="glyphicon glyphicon-search"></span>
+        		Search
+        		</button>
+     		</span>
+			<input type="text" class="form-control" ng-model="search"> 
+		</div>
+ 	</form>
+ 	
+ 	<a href="http://sdrv.ms/1dAF6Lr" class="btn btn-default navbar-right" target="_blank"> 
+		<span class="glyphicon glyphicon-file"></span>
+ 		YiKangXYJ_api.xlsx
+ 	</a>
+ 	
+ 	<div class="row">
+		<div class="col-xs-2">
+			<span class="glyphicon glyphicon-tags"></span>
+			token_key 
+			<input type="text" class="form-control" ng-model="token_key">
+		</div>
+ 		<div class="col-xs-3">
+ 			<span class="glyphicon glyphicon-lock"></span>
+			md5 
+			<input type="text" class="form-control" ng-model="str"> 
+			{{md5(str)}} 
+		</div>
+ 		<div class="col-xs-3">
+ 			<span class="glyphicon glyphicon-calendar"></span>
+			date2ts ( yyyy,MM,dd HH:mm:ss ) 
+			<input type="text" class="form-control" ng-model="date"> 
+			{{date2ts_1000(date)}} = {{date2ts(date)}} / 1000
+		</div>
+		<div class="col-xs-3">
+ 			<span class="glyphicon glyphicon-pushpin"></span>
+			UUID <br>
+			{{uuid()}} 
+		</div>
+ 	</div>
+ 	
  		</nav>
- 	</header>
- 	<hr>	
- 	<hr>
- 	<hr>
+ 		<br>
+ 	</footer>
+ 	
+ 		
 	<div class="container">
 	<!-- 
-		<div ng-repeat="api in apilist | filter:search" class="col-md-3">
+		<div class="col-md-3">
 			<ul class="nav">
-				<li> <a href="#{{api.url}}">{{api.url}}</a> </li>
+				<li ng-repeat="api in apilist | filter:search"><a href="#{{api.url}}">{{api.url}}</a></li>
 			</ul>
 		</div>
 	 -->
 		
 		<div role="main" >
 			<div ng-repeat="api in apilist | filter:search" id="{{api.url}}">
+				<hr>
 				<strong>
 				<a href="{{api.request(api.url, api.params, api.values)}}">
 				{{api.request(api.url, api.params, api.values)}}
@@ -116,17 +224,19 @@
 				<form action="{{api.url}}" method="post" class="form-inline">
 				
 					<div ng-repeat="(idx,param) in api.params" class="form-group">
-					{{param}} <input name="{{param}}" ng-model="api.values[idx]" ng-hide="param==undefined" required>
+					{{param}} <input name="{{param}}" ng-model="api.values[idx]" ng-hide="param==undefined" placeholder="{{api.placeholders[idx]}}" required>
 					</div>
 					key <input name="key" value="{{key(api.values)}}" readonly="readonly">
 					token <input name="token" value="{{md5(concat(api.values))}}">
 					<input type="submit" class="btn btn-success" ng-hide="api.params[0]==undefined">
 				</form>
-				<hr>
 			</div>
 		</div>
 		
 	</div>
+	
+	<hr>
+	<br><br><br><br><br><br><br><br><br><br><br><br>
 
 </body>
 </html>
