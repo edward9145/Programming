@@ -8,7 +8,8 @@ values: technology, memes, cat videos
 **/
 // implement code for R1 below
 let types = ["technology", "memes", "cat videos"]
-println(types)
+//println(types)
+
 
 /**
 R2 – Create a BlogPost class with the following properties:
@@ -33,9 +34,9 @@ class BlogPost {
     var email: String
     var order: Int = 0
     
-    init(){
-        author = "Kejia.Wu"
-        email = "kejiawu@example.com"
+    init(name: String, email: String){
+        self.author = name
+        self.email = email
     }
     
     func teaser() -> String {
@@ -47,10 +48,10 @@ class BlogPost {
     }
     
 }
-let post = BlogPost()
-println(post.teaser())
-post.views = 5
-println(post.teaser())
+//let post = BlogPost(name: "Kejia.Wu", email: "kejiawu@example.com")
+//println(post.teaser())
+//post.views = 5
+//println(post.teaser())
 
 
 /**
@@ -89,10 +90,10 @@ for author in authors {
     authorDict[author.name] = author.email
 }
 
-for i in 1...10 {
-    var author = randomAuthor(authorDict)
-    println(author)
-}
+//for i in 1...10 {
+//    var author = randomAuthor(authorDict)
+//    println(author)
+//}
 
 
 /**
@@ -102,9 +103,16 @@ the “order” property to the value of the index of the for loop used to
 populate this array.
 **/
 // implement code for R4 below
-
-
-
+var blogPosts = [BlogPost]()
+for i in 0..<10 {
+    var author = randomAuthor(authorDict)
+    var blogPost = BlogPost(name: author.0, email: author.1)
+    blogPost.order = i
+    blogPosts.append(blogPost)
+    
+//    print(blogPosts[i].order)
+//    println(blogPosts[i].author)
+}
 
 
 /**
@@ -117,7 +125,22 @@ selected number of views. If the “type” passed to the function is
 “cat videos” always return nil.
 **/
 // implement code for R5 below
-
+func randomViews(type: String) -> Int? {
+    if (type == "cat videos"){
+        return nil
+    }
+    let possibleViewCounts = [10, 20, 30, 40, 50]
+    var randValue = possibleViewCounts[Int(arc4random_uniform(UInt32(possibleViewCounts.count)))]
+    
+    switch randValue {
+    case 10:
+        return nil
+    case 20, 30:
+        return 0
+    default:
+        return randValue
+    }
+}
 
 
 /**
@@ -126,7 +149,10 @@ for each one and set it to the blog post “views” property. Then println the
 value of each post.teaser().
 **/
 // implement code for R6 below
-
+for blogPost in blogPosts {
+    blogPost.views = randomViews(blogPost.type)
+    println(blogPost.teaser())
+}
 
 
 /**
@@ -138,4 +164,29 @@ the stack. Use a for loop to iterate the “blogs” stack, pop the top one
 off and println the blog’s teaser. Println the count of items in the stack.
 **/
 // implement code for R7 below
+struct Stack<T> {
+    var items = [T]()
+    mutating func push(item: T){
+        items.append(item)
+    }
+    
+    mutating func pop() -> T {
+        return items.removeLast()
+    }
+    
+    mutating func count() -> Int{
+        return items.count
+    }
+}
 
+var blogStack = Stack<BlogPost>()
+for blogPost in blogPosts {
+    blogStack.push(blogPost)
+}
+println(blogStack.count())
+
+for i in 0..<blogStack.count() {
+    var blogPost = blogStack.pop()
+    println(blogPost.teaser())
+}
+println(blogStack.count())
