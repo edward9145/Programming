@@ -1,0 +1,110 @@
+http://www.vincentina.net/?p=3342
+https://www.howtoforge.com/mysql_database_replication
+https://www.digitalocean.com/community/tutorials/how-to-set-up-master-slave-replication-in-mysql
+
+Master 192.168.1.81
+
+# yum install mysql mysql-server
+
+# mysql_secure_installation
+set root password. (e.g 'password').
+
+# vim /etc/sysconfig/iptables
+-A INPUT -p tcp -m tcp --dport 3306 -j ACCEPT
+
+# service iptables restart
+
+# mysql -u root -p
+> grant all privileges on *.* to 'root'@'%' identified by 'password';
+>　flush privileges;
+(
+sample data
+# wget http://downloads.mysql.com/docs/sakila-db.zip
+# unzip sakila-db.zip
+# mysql -u root -p
+> source sakila-db/sakila-schema.sql
+> source sakila-db/sakila-data.sql
+)
+
+
+mysql config file: /etc/my.cnf
+# vim /etc/my.cnf
+[mysqld]
+datadir=/var/lib/mysql
+socket=/var/lib/mysql/mysql.sock
+user=mysql
+# Disabling symbolic-links is recommended to prevent assorted security risks
+symbolic-links=0
+log-bin=/var/log/mysql/mysql-bin.log
+binlog-do-db=sakila
+server-id=1
+
+
+!! remember to change owner to mysql:mysql
+# chown -R mysql:mysql /var/log/mysql
+
+
+# mysql -u root -p
+> grant replication slave on *.* to 'slave_user'@'%' identified by 'freely';
+> use sakila;
+> flush tables with read lock;
+> show master status;
+
++------------------+----------+--------------+------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB |
++------------------+----------+--------------+------------------+
+| mysql-bin.000001 |     1179 | sakila       |                  |
++------------------+----------+--------------+------------------+
+
+
+
+# mysqldump -u root -p --opt sakila > sakila.sql
+
+(
+To copy a file from B to A while logged into B:
+# scp /path/to/file username@a:/path/to/destination
+
+To copy a file from B to A while logged into A:
+# scp username@b:/path/to/file /path/to/destination
+)
+
+# scp /xxx/sakila.sql root@salve:/xxx/sakila.sql
+
+
+
+------------------------------------------------------------
+
+Slave 192.168.1.84
+
+# vim /etc/my.cnf
+
+server-id=2
+master-host=192.168.1.81
+master-user=slave_user
+master-password=freely
+master-connect-retry=60
+replicate-do-db=sakila
+
+# mysql -u root -p
+
+> change master to master_host='192.168.1.81',master_user='slave_user',master_password='freely', master_log_file='mysql-bin.000001', master_log_pos=1179;
+> start slave;
+> show slave status;
+
+
+------------------------------------------------------------
+Slave 192.168.1.85
+
+# vim /etc/my.cnf
+
+server-id=3
+relay-log=/var/log/mysql/mysql-realy-bin.log
+log-bin=/var/log/mysql/mysql-bin.log
+binlog-do-db=sakila
+
+# mysql -u root -p
+
+> change master to master_host='192.168.1.81',master_user='slave_user',master_password='freely', master_log_file='mysql-bin.000001', master_log_pos=1179;
+> start slave;
+> show slave status;
+
