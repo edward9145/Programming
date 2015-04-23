@@ -74,6 +74,7 @@ set background=dark " When set to "dark", Vim will try to use colors that look
 set mouse=a         " Enable the use of the mouse.
  
 filetype plugin indent on
+"set term=ansi       " using a terminal which supports color
 syntax on
 
 set cursorline
