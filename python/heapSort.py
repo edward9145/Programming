@@ -12,7 +12,7 @@ def heapify(A, idx, end):
 
 def buildHeap(A):
     n = len(A)
-    for i in range(n/2-1, -1, -1):
+    for i in range(n//2-1, -1, -1):
         heapify(A, i, n)
         # print A
 
@@ -25,12 +25,12 @@ def heapSort(A):
 
 heap = [3,1,6,7,9,2,4,8,5]
 buildHeap(heap)
-print heap
+print(heap)
 
 h = 0
 while (1<<h) <= len(heap):
-    print heap[(1<<h)-1:(1<<(h+1))-1]
+    print(heap[(1<<h)-1:(1<<(h+1))-1])
     h += 1
 
 heapSort(heap)
-print heap
+print(heap)
