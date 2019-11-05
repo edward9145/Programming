@@ -39,44 +39,38 @@ class Solution:
     """
     def getAns(self, a):
         # write your code here
+
+# buy\sale   [1, 2, 10, 9]
+#        1    0  1  9   8
+#        2    -1 0  8   7
+#        10   -9 -8 0   -1
+#        9    -8 -7 1   0
         if not a or len(a) <= 1:
             return 0
-            
+        
+        import queue as Q
+        pq = Q.PriorityQueue()
+        visited = set()
         total_profit = 0
-        while len(a) > 0:
-            profit, sale_id, buy_id = self.maxProfit(a)
-            if profit == 0:
-                break
-            print(a)
-            print("profit: %d\n sale: a[%d]=%d\n buy: a[%d]=%d" % (profit, sale_id, a[sale_id], buy_id, a[buy_id]))
-            if sale_id > buy_id:
-                a.pop(buy_id)
-                a.pop(sale_id-1)
-            else:
-                a.pop(sale_id)
-                a.pop(buy_id-1)
-            print(a)
-            total_profit += profit
+        buy_sale = [[0]*len(a) for _ in range(len(a))]
+        for buy in range(len(a)):
+            for sale in range(buy,len(a)):  # O(n*n/2) = O(n*n)
+                profit = a[sale] - a[buy]
+                if profit > 0:   # pq always get the min one, reverse profit to get the max
+                    pq.put((-profit, (buy,sale)))
+                    buy_sale[buy][sale] = profit
+        while not pq.empty():   # O(n*n/2) = O(n*n) 
+            profit, (buy, sale) = pq.get()
+            print(profit, (buy, sale))
+            if buy not in visited and sale not in visited:
+                total_profit -= profit
+                visited.add(buy)
+                visited.add(sale)
+
+        for r in buy_sale:
+            print(r)
         return total_profit
-    
-    def maxProfit(self, prices):
-        if not prices or len(prices) == 1:
-            return 0, 0, 0
-        sale_id = 0
-        buy_id = 0
-        minPrice = prices[0]
-        maxPro = 0
-        for i in range(len(prices)):
-            if minPrice > prices[i]:
-                minPrice = prices[i]
-                # buy_id = i
-            if maxPro < prices[i] - minPrice:
-                maxPro = prices[i] - minPrice
-                sale_id = i
-        buy_id = prices.index(prices[sale_id] - maxPro)
-        return maxPro, sale_id, buy_id
-
-
+        
 s = Solution()
 ans = s.getAns([1,2,10,9])
 print(ans)
